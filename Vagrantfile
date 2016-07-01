@@ -19,10 +19,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # always use Vagrants insecure key
   config.ssh.insert_key = false
 
-  # == The Provisionner
+  # == The Provisioner
   #
   # Gateway, dhcp, pxe machine
-  config.vm.define "core-provisionner" do |prov|
+  config.vm.define "core-provisioner" do |prov|
 
     # Plugins configuration for this manager
     if Vagrant.has_plugin?("vagrant-cachier")
@@ -60,14 +60,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   [["192.168.2.3", "0800278E158A"],
    ["192.168.2.4", "0800278E158B"],
    ["192.168.2.5", "0800278E158C"]].collect.each_with_index do |data, index|
-    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, index] do |node|
-      ip = data[0]
+    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, index + 1 ] do |node|
+      ip  = data[0]
       mac = data[1]
 
       node.vm.hostname = vm_name
 
       # Use a image designed for pxe boot.
-      node.vm.box = "steigr/pxe"
+      node.vm.box = "clink15/pxe"
 
       # Give the host a bogus IP, otherwise vagrant will bail out.
       # Static mac address match up with dnsmasq dhcp config
@@ -78,7 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       config.vm.synced_folder '.', '/vagrant', disabled: true
 
       # Use the ip we gets assigned from dhcp when 'vagrant ssh'
-      node.ssh.host = ip
+      node.ssh.host     = ip
       node.ssh.username = 'core'
 
 
