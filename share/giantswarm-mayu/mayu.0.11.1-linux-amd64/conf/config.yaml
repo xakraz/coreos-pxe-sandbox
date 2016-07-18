@@ -1,0 +1,45 @@
+# used to install machines and if no coreos 
+# version is given in the profile
+default_coreos_version: 1068.6.0
+
+network:
+  pxe: true
+  interface: eth1
+  bind_addr: 192.168.2.2
+  bootstrap_range:
+    start: 192.168.2.10
+    end: 192.168.2.20
+  ip_range:
+    start: 192.168.2.21
+    end: 192.168.2.30
+  dns: [8.8.8.8, 8.8.4.4]
+  router: 192.168.2.2
+  network_model: singlenic
+
+profiles:
+  - name: core-services
+    quantity: 3
+    tags:
+      - "role-core=true"
+    coreos_version: "1068.6.0"
+  - name: default
+    disable_engine: true
+    coreos_version: "835.13.0"
+    tags:
+      - "role-worker=true"
+      - "stack-compute=true"
+
+templates_env:
+  ssh_authorized_keys:
+    - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDajO2e4RXFSUlOE6qeMa1UEHfd+rARgfZLhXp38Ch1P5XH0YNM3QVyQB32j7w9kFVLFJtEcQXTa4EaAhum/2VjpqPpF4dL/RvlWn/XOgXHIDP9O1rJP6EJRda+la2FY8FpzlYXA4sK9q03FCvpWIlLi2SEaVImRoyRGQ8KGzCM+6idfoNHu2F0+o7AqCLUqlOgLoWFrLYpLLwFDWoI5nstdyQi2Vb0k6ilI3MLHLsf8WLX8qvcKDgn+ZKtS26b/7GRyiHq2dOH8shGQBYULqFNunB7c9wUw55plNQyC6y3ziWh6UMxK9pOTFA1onnRbq+aNpYcKeoG852E1yhdsXUZS3txqycfTBKsu7Quu1iS8dN3u49jPiAYicpXa5TGM4k1kWokiyqW8f2i9Wnr/8Owwpks1SwoHD5hZ2+TqDguRHMfmZAuVYkzll1PAHrtlEqLFpS83nFFtDFISE4HZWLNrpmLMVcupLUo4Jn9jlasBhyrsHvFH5aSKyEH1uDGkEwEgmG1/sm31LH8MTfV/k8YrYIeaWyDMYkaTj5OBomZflxoU21iEk1iQnS+0mTkPJDWPAH+jAh81riB/jCIgSE0BJU58aa7XX9aFczEGyw/qhXkV818jCpunrGaloI09dBccnJxC0vpcwD49TSfMwnoyLyvkQ9hX/IgvcFf3FrIOw== ssh-x.krantz@criteo-mbp"
+  mayu_http_endpoint: "http://192.168.2.2:4080"
+  yochu_localsubnet: "192.168.2.0/24"
+  yochu_gateway: "192.168.2.2/32"
+  yochu_private_registry: "registry.private.tiny.swarm"
+  yochu_http_endpoint: "http://192.168.2.2:4080/yochu"
+  yochu_version: 0.19.1
+  etcd_version: v2.2.5-gs-1
+  fleet_version: v0.11.5-gs-grpc-1
+  docker_version: 1.10.3
+  rkt_version: v1.3.0
+  k8s_version: v1.2.2

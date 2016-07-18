@@ -1,1 +1,11 @@
 .vagrant
+
+## Binaries
+*.tar.gz
+*.bin.bz2
+*.vmlinuz
+*.cpio.gz
+
+## Mayu specific
+share/giantswarm-mayu/mayu.0.11.1-linux-amd64/images/*
+share/giantswarm-mayu/mayu.0.11.1-linux-amd64/yochu/*

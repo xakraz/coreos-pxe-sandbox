@@ -1,0 +1,21 @@
+{{define "net_singlenic"}}
+  - name: 10-nodhcp.network
+    runtime: false
+    content: |
+      [Match]
+      Name=*
+
+      [Network]
+      DHCP=no
+  - name: 00-{{.Host.ConnectedNIC}}.network
+    runtime: false
+    content: |
+      [Match]
+      Name={{.Host.ConnectedNIC}}
+
+      [Network]
+      Address={{.Host.InternalAddr}}/22
+      Gateway={{.ClusterNetwork.Router}}
+      {{ range $server := .ClusterNetwork.DNS }}DNS={{ $server }}
+      {{ end }}
+{{end}}
