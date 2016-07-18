@@ -52,6 +52,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #prov.vm.network "public_network", :adapter=>1, auto_config: false
 
     #prov.ssh.host = prov_ip
+
+    # File sharing
+    prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'share'), "/home/core/share",
+      :nfs => true,
+      :mount_options => ['nolock,vers=3,udp'],
+      :id => "core"
   end
 
 
