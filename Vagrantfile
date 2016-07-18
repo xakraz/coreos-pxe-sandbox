@@ -55,9 +55,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # File sharing
     prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'share'), "/home/core/share",
-      :nfs => true,
-      :mount_options => ['nolock,vers=3,udp'],
-      :id => "core"
+      type: "rsync",
+      rsync__args: ["--verbose", "--archive","--compress"]
   end
 
 
