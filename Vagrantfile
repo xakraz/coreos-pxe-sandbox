@@ -62,9 +62,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # == The CoreOS nodes
   #
-  [["192.168.2.3", "0800278E158A"],
-   ["192.168.2.4", "0800278E158B"],
-   ["192.168.2.5", "0800278E158C"]].collect.each_with_index do |data, index|
+  [["192.168.2.21", "0800278E158A"],
+   ["192.168.2.22", "0800278E158B"],
+   ["192.168.2.23", "0800278E158C"]].collect.each_with_index do |data, index|
     config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, index + 1 ] do |node|
       ip  = data[0]
       mac = data[1]
@@ -73,6 +73,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       # Use a image designed for pxe boot.
       node.vm.box = "clink15/pxe"
+      node.vm.boot_timeout = 3600
 
       # Give the host a bogus IP, otherwise vagrant will bail out.
       # Static mac address match up with dnsmasq dhcp config
@@ -80,17 +81,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.network "private_network", :adapter=>1, ip: "192.168.2.24#{index}", :mac => mac , auto_config: false
 
       # We dont need no stinking synced folder.
-      config.vm.synced_folder '.', '/vagrant', disabled: true
+      node.vm.synced_folder '.', '/vagrant', disabled: true
 
       # Use the ip we gets assigned from dhcp when 'vagrant ssh'
       node.ssh.host     = ip
       node.ssh.username = 'core'
+      node.ssh.private_key_path = '/Users/x.krantz/.ssh/ssh-x.krantz@criteo-mbp'
+
 
 
       node.vm.provider "virtualbox" do |vb, override|
         # vb.gui = true
         # Chipset needs to be piix3, otherwise the machine wont boot properly.
         vb.customize ["modifyvm", :id, "--chipset", "piix3"]
+        vb.customize ["setextradata", :id, "VBoxInternal/Devices/pcbios/0/Config/DmiSystemSerial", "string:#{mac}-#{index}"]
       end
     end
   end
