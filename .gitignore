@@ -1,3 +1,4 @@
+## Dev tools
 .vagrant
 
 ## Binaries
@@ -9,3 +10,4 @@
 ## Mayu specific
 share/giantswarm-mayu/mayu.0.11.1-linux-amd64/images/*
 share/giantswarm-mayu/mayu.0.11.1-linux-amd64/yochu/*
+share/giantswarm-mayu/mayu.0.11.1-linux-amd64/clusters
