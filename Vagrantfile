@@ -10,7 +10,7 @@ Vagrant.require_version ">= 1.6.0"
 # Defaults for config options defined in CONFIG
 $update_channel = "alpha"
 $image_version  = "current"
-$instance_name_prefix = "core"
+$node_name_prefix = "core"
 
 
 # = Vagrant VMs playground
@@ -65,7 +65,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   [["192.168.2.21", "0800278E158A"],
    ["192.168.2.22", "0800278E158B"],
    ["192.168.2.23", "0800278E158C"]].collect.each_with_index do |data, index|
-    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, index + 1 ] do |node|
+    config.vm.define vm_name = "%s-%02d" % [$node_name_prefix, index + 1 ] do |node|
       ip  = data[0]
       mac = data[1]
 
