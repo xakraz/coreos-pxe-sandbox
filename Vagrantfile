@@ -7,10 +7,13 @@ Vagrant.require_version ">= 1.6.0"
 
 # = Variables
 #
-# Defaults for config options defined in CONFIG
+# Defaults for config options for CoreOS Vagrant image
 $update_channel = "alpha"
 $image_version  = "current"
 $node_name_prefix = "core"
+
+# Network variables
+$private_subnet = '192.168.2'
 
 
 # = Vagrant VMs playground
@@ -42,7 +45,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     # VM Instance config
-    prov_ip = "192.168.2.2"
+    prov_ip = "#{$private_subnet}.2"
 
     prov.vm.box     = "coreos-%s" % $update_channel
     prov.vm.box_url = "https://storage.googleapis.com/%s.release.core-os.net/amd64-usr/%s/coreos_production_vagrant.json" % [$update_channel, $image_version]
@@ -62,9 +65,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # == The CoreOS nodes
   #
-  [["192.168.2.21", "0800278E158A"],
-   ["192.168.2.22", "0800278E158B"],
-   ["192.168.2.23", "0800278E158C"]].collect.each_with_index do |data, index|
+  [["#{$private_subnet}.21", "0800278E158A"],
+   ["#{$private_subnet}.22", "0800278E158B"],
+   ["#{$private_subnet}.23", "0800278E158C"]].collect.each_with_index do |data, index|
     config.vm.define vm_name = "%s-%02d" % [$node_name_prefix, index + 1 ] do |node|
       ip  = data[0]
       mac = data[1]
@@ -78,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Give the host a bogus IP, otherwise vagrant will bail out.
       # Static mac address match up with dnsmasq dhcp config
       # The auto_config: false tells vagrant not to change the hosts ip to the bogus one.
-      node.vm.network "private_network", :adapter=>1, ip: "192.168.2.24#{index}", :mac => mac , auto_config: false
+      node.vm.network "private_network", :adapter=>1, ip: "#{$private_subnet}.24#{index}", :mac => mac , auto_config: false
 
       # We dont need no stinking synced folder.
       node.vm.synced_folder '.', '/vagrant', disabled: true
