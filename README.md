@@ -30,6 +30,8 @@ Other usefull links:
 
 ## VBox topology
 
+![Vagrant setup](https://github.com/xakraz/coreos-pxe-sandbox/blob/master/img/20160719_CoreOS_1-cluster-bootstraping.png)
+
 # Demos
 
 ## Cluster Boostraping with Mayu
