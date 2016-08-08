@@ -8,8 +8,9 @@ Vagrant.require_version ">= 1.6.0"
 # = Variables
 #
 # Defaults for config options for CoreOS Vagrant image
-$update_channel = "alpha"
-$image_version  = "current"
+$update_channel   = "alpha"
+#$image_version    = "current"
+$image_version    = "1032.1.0"
 $node_name_prefix = "core"
 
 # Network variables
@@ -56,6 +57,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     #prov.ssh.host = prov_ip
 
+    # Configure the CoreOS instance
+    prov.vm.provision "file", source: "scripts", destination: "~/scripts"
+    prov.vm.provision "shell" do |s|
+      s.name           = "Setup Bats"
+      s.inline         = "/bin/bash /home/core/scripts/bats/install.sh /opt"
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Setup network"
+      s.inline         = "export PATH=/opt/libexec:${PATH} /home/core/scripts/1-setup-gateway.sh"
+      s.privileged     = true
+    end
+
+
     # File sharing
     prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'share'), "/home/core/share",
       type: "rsync",
@@ -89,14 +104,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Use the ip we gets assigned from dhcp when 'vagrant ssh'
       node.ssh.host     = ip
       node.ssh.username = 'core'
-      node.ssh.private_key_path = '/Users/x.krantz/.ssh/ssh-x.krantz@criteo-mbp'
+      #node.ssh.private_key_path = '/Users/x.krantz/.ssh/ssh-x.krantz@criteo-mbp'
 
 
-
+      # Virtualbox provider tweaks
       node.vm.provider "virtualbox" do |vb, override|
         # vb.gui = true
         # Chipset needs to be piix3, otherwise the machine wont boot properly.
         vb.customize ["modifyvm", :id, "--chipset", "piix3"]
+
+        # By default, VBox sets the VM serial number to 0
+        # This hack sets a different, but predicatable serial_number to the nodes VMs
+        # Mayu uses serial_number as a uuid for servers
         vb.customize ["setextradata", :id, "VBoxInternal/Devices/pcbios/0/Config/DmiSystemSerial", "string:#{mac}-#{index}"]
       end
     end
