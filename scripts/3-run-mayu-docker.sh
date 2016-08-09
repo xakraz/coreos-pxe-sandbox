@@ -46,7 +46,7 @@ docker run -d \
   -v ${MAYU_CONF}/templates:/usr/lib/mayu/templates \
   -v ${MAYU_CONF}/conf/config.yaml:/etc/mayu/config.yaml \
   -v /etc/resolv.conf:/etc/resolv.conf \
-  ${MAYU_IMAGE}
+  ${MAYU_IMAGE} \
   --no-tls \
   --debug \
   --use-internal-etcd-discovery=false --etcd-discovery=https://discovery.etcd.io \
