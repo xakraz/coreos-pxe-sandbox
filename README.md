@@ -21,6 +21,7 @@ coreos-pxe-sandbox
 
 
 
+
 # Overview
 
 This repo contains a Vagrant setup to experiment provisioning a **cluster** of [CoreOS](https://coreos.com/) instances with [Mayu](https://github.com/giantswarm/mayu/), a tool provided by [GiantSwam](https://giantswarm.io/products/).
@@ -32,6 +33,7 @@ Other useful links:
 * https://github.com/coreos/coreos-baremetal
 * https://blog.giantswarm.io/mayu-yochu-provisioning-tools-for-coreos-bare-metal/
 * [CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
+
 
 
 
@@ -100,7 +102,7 @@ What it does, described in the Vagrantfile, is:
 * Disable some features from VBox (since CoreOS is not a regular distro)
 * Sends the ["Provisioning" scripts](scripts/) to the VM
 * Run them
-  - Install BATS testing framework (For a nicer output)
+  - Install [BATS](https://github.com/sstephenson/bats) testing framework (For a nicer output)
   - Activate `IP_FORWARDING` and comfigure `IPTABLES`
 * And finaly sync the "shared" resources to the `core-provisioner`
 
@@ -192,7 +194,7 @@ And the `mayuctl` utility.
 └── mayuctl*                    // The client
 ```
 
-#### Cluster configuration / boot process
+#### Boot process
 
 Mayu comes in a post-VM era, where we are used to **"comodity" and "standardised" hardware** (aka. same servers).
 
@@ -205,8 +207,9 @@ The idea for "cluster" management is:
 
 More details here (with pictures :) https://github.com/giantswarm/mayu/blob/master/docs/inside.md
 
+#### Cluster configuration
 
-The key concept here is the [**"profile"**](https://github.com/giantswarm/mayu/blob/master/docs/configuration.md#profiles), wich is defined in `mayu` configuration file.
+The key concept here are the [**"profiles"**](https://github.com/giantswarm/mayu/blob/master/docs/configuration.md#profiles), wich are defined in `mayu` configuration file.
 * Profiles have a predefined **quantity** and *tags*
 * When a new node boots,
   - if a cluster is not full yet, it will be assign to this one
@@ -216,19 +219,249 @@ The key concept here is the [**"profile"**](https://github.com/giantswarm/mayu/b
 
 ### Step by Step bootstrapping
 
-#### A - Start `Mayu`
+#### A - Prepare `Mayu`
 
-* Start a Shell and explore
-* Start the service
-* Check the service
+##### SSH into `core-provisioner` host
 
-#### B - Boot the VMs
+```
+$ vagrant ssh core-provisioner
 
-* Check the status
-* Check the audit log
-* Check the results
+CoreOS alpha (1032.1.0)
+Last login: Tue Aug  9 12:02:49 2016 from 10.0.2.2
+core@prov ~ $
+```
 
-#### C - Lifecycle with `mayuctl`
+#####  Fetch Mayu binaries
+
+```
+core@prov ~ $ scripts/2-fetch-mayu.sh 0.11.1
+...
+mkdir: created directory '/home/core/giantswarm-mayu/mayu.0.11.1-linux-amd64'
+~/giantswarm-mayu
+DONE
+```
+
+#####  Pre-Fecth CoreOS images + other binaries
+
+Using the `fetch-coreos-image` utility script provided by `mayu` artifact:
+
+```
+core@prov ~ $ cd giantswarm-mayu/mayu.0.11.1-linux-amd64
+
+core@prov ~/giantswarm-mayu/mayu.0.11.1-linux-amd64 $ ./fetch-coreos-image 1068.6.0
+...
+```
+
+```
+core@prov ~ $ cd giantswarm-mayu/mayu.0.11.1-linux-amd64
+core@prov ~/giantswarm-mayu/mayu.0.11.1-linux-amd64 $ ./fetch-yochu-assets
+...
+```
+
+=>
+
+```
+core@prov ~/giantswarm-mayu/mayu.0.11.1-linux-amd64 $ ls -l images/1068.6.0/
+total 524692
+-rw-r--r--. 1 core core         9 Aug  9 13:38 coreos-version
+-rw-r--r--. 1 core core 267866943 Jul 12 21:59 coreos_production_image.bin.bz2
+-rw-r--r--. 1 core core  33839200 Jul 12 21:59 coreos_production_pxe.vmlinuz
+-rw-r--r--. 1 root root 235548737 Aug  9 13:38 coreos_production_pxe_image.cpio.gz
+```
+
+
+#### B - Start `Mayu`
+
+#####  Check the `mayu` conf
+
+Located in the `share` directory
+* The default CoreOS Image
+* The network setup for Mayu
+* The clusters Profiles
+* And SSH Keys
+
+```
+core@prov ~ $ cat share/giantswarm-mayu/mayu.0.11.1-linux-amd64/conf/config.yaml
+```
+
+#####  Start the container and explore
+
+With the provided [script](scripts/3-run-mayu-docker.sh) and the good volumes:
+
+```
+core@prov ~ $ sudo scripts/3-run-mayu-docker.sh
+
+Unable to find image 'giantswarm/mayu:0.11.1' locally
+0.11.1: Pulling from giantswarm/mayu
+...
+Status: Downloaded newer image for giantswarm/mayu:0.11.1
+19b172678f35e3456a39159c5c3960330d18b0e331cbf719468d48a5c0fdf71f
+```
+
+```
+core@prov ~ $ docker ps -a
+CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS               NAMES
+19b172678f35        giantswarm/mayu:0.11.1   "mayu --cluster-direc"   3 seconds ago       Up 2 seconds                            mayu
+```
+
+You can explore the container with:
+
+```
+core@prov ~ $ docker exec -it mayu /bin/bash
+root@prov:/usr/lib/mayu#
+```
+
+And follow the logs with
+
+```
+core@prov ~ $ docker logs -f mayu
+E0809 15:07:21.955479       1 dnsmasq.go:75] signal: killed
+
+```
+
+> Note
+> --
+>
+> By default, `Mayu` thinks it can access an ETCD instance running on the same host to enable the `etcd` bootstrapping of the CoreOS clusters.
+>
+> The documation regarding this is not linked anywhere but is readable there: https://github.com/giantswarm/mayu/blob/master/docs/etcd_clusters.md
+>
+> For workshop reasons, we will use the public ETCD service provided by CoreOS. But, of course, for production usage, use a local etcd instance as explained.
+
+#####  Check the service
+
+On the `core-provisioner` host, we can see the bindings:
+
+```
+$ vagrant ssh core-provisioner
+
+core@prov ~ $ sudo netstat -plntu
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 192.168.2.2:53          0.0.0.0:*               LISTEN      2904/dnsmasq
+udp        0      0 192.168.2.2:53          0.0.0.0:*                           2904/dnsmasq
+udp        0      0 0.0.0.0:67              0.0.0.0:*                           2904/dnsmasq
+udp        0      0 10.0.2.15:68            0.0.0.0:*                           1204/systemd-network  (DHCP Client)
+udp        0      0 192.168.2.2:69          0.0.0.0:*                           2904/dnsmasq          (DHCP Server)
+
+tcp6       0      0 :::4080                 :::*                    LISTEN      2890/mayu       (Mayu HTTP Service)
+
+tcp6       0      0 fe80::a00:27ff:fe7c::53 :::*                    LISTEN      2904/dnsmasq
+tcp6       0      0 :::22                   :::*                    LISTEN      1/systemd
+udp6       0      0 fe80::a00:27ff:fea7:546 :::*                                1204/systemd-networ
+udp6       0      0 fe80::a00:27ff:fe7c::53 :::*                                2904/dnsmasq
+udp6       0      0 fe80::a00:27ff:fe7c::69 :::*                                2904/dnsmasq
+```
+
+And using the client `mayuctl` localy from the fetched artifact:
+
+```
+core@prov ~/giantswarm-mayu/mayu.0.11.1-linux-amd64 $ ./mayuctl --no-tls list
+IP  SERIAL  PROFILE  IPMIADDR  PROVIDERID  ETCDTOKEN  METADATA  COREOS  STATE  LASTBOOT
+```
+
+
+#### C - Boot the VMs in PXE
+
+> Notes
+> --
+>
+> `mayu` uses the `serial_number` of the servers as a UUID: https://github.com/giantswarm/mayu/blob/master/templates/first_stage_script.sh#L23.
+>
+> However, by **default VBox does not manage that** and assigns 0 for every VMs.
+>
+> To trick that, we have to add this option in `Vagrantfile`:
+> ```
+> vb.customize ["setextradata", :id, "VBoxInternal/Devices/pcbios/0/Config/DmiSystemSerial", "string:#{mac}-#{index}"]
+> ```
+>
+> Links:
+> - https://coderwall.com/p/b5mu2w/symlinks-in-shares-for-vagrant
+> - http://superuser.com/questions/55561/how-can-i-change-the-bios-serial-number-in-virtualbox
+> - http://www.virtualbox.org/manual/ch09.html#changedmi
+>
+
+##### Start the VMs
+
+```
+$ vagrant up --parallel /core-0/
+```
+
+##### Check the status with `mayuctl`
+
+```
+Every 5.0s: ./mayuctl --no-tls list                                                                                                                              Tue Aug  9 14:21:49 2016
+
+IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE         LASTBOOT
+192.168.2.21  0800278e158a-0  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installing"  0001-01-01 00:00:00
+192.168.2.22  0800278e158b-1  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installing"  0001-01-01 00:00:00
+192.168.2.23  0800278e158c-2  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installing"  0001-01-01 00:00:00
+```
+
+```
+Every 5.0s: ./mayuctl --no-tls list                                                                                                                              Tue Aug  9 14:23:40 2016
+
+IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE         LASTBOOT
+192.168.2.21  0800278e158a-0  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installed"   0001-01-01 00:00:00
+192.168.2.22  0800278e158b-1  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installing"  0001-01-01 00:00:00
+192.168.2.23  0800278e158c-2  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installing"  0001-01-01 00:00:00
+```
+
+```
+Every 5.0s: ./mayuctl --no-tls list                                                                                                                              Tue Aug  9 14:29:21 2016
+
+IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE        LASTBOOT
+192.168.2.21  0800278e158a-0  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installed"  0001-01-01 00:00:00
+192.168.2.22  0800278e158b-1  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installed"  0001-01-01 00:00:00
+192.168.2.23  0800278e158c-2  core-services  -         -           41f07d10ab835b22071a32d5c1b75a6d  role-core=true  1068.6.0  "installed"  0001-01-01 00:00:00
+```
+
+```
+Every 5.0s: giantswarm-mayu/mayu.0.11.1-linux-amd64/mayuctl --no-tls list                                                                                        Tue Aug  9 15:49:18 2016
+
+IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE      LASTBOOT
+192.168.2.21  0800278e158a-0  core-services  -         -           416b381afbc752dfc77e48ba7a99ccc3  role-core=true  1068.6.0  "running"  2016-08-09 15:49:02
+192.168.2.22  0800278e158b-1  core-services  -         -           416b381afbc752dfc77e48ba7a99ccc3  role-core=true  1068.6.0  "running"  2016-08-09 15:49:06
+192.168.2.23  0800278e158c-2  core-services  -         -           416b381afbc752dfc77e48ba7a99ccc3  role-core=true  1068.6.0  "running"  2016-08-09 15:49:11
+```
+
+https://github.com/giantswarm/mayu/blob/master/docs/machine_state_transition.md
+
+Screen-shots of the PXE boot process: [img](img/)
+
+##### Access the nodes
+
+From vagrant
+
+```
+$ vagrant ssh core-01
+
+CoreOS stable (1068.6.0)
+Last login: Tue Aug  9 14:25:44 2016 from 192.168.2.1
+Update Strategy: No Reboots
+core@core-01 ~ $
+```
+
+From our `private_network`
+
+```
+$ ssh core@192.168.2.22 -i ~/.vagrant.d/insecure_private_key
+
+
+CoreOS stable (1068.6.0)
+Last login: Tue Aug  9 14:28:04 2016 from 192.168.2.1
+Update Strategy: No Reboots
+core@core-02 ~ $
+```
+
+> Notes
+> --
+>
+> The Public key has been configured in [`share/giantswarm-mayu/mayu.0.11.1-linux-amd64/conf/config.yaml`](share/giantswarm-mayu/mayu.0.11.1-linux-amd64/conf/config.yaml)
+>
+
+
+#### D - Lifecycle with `mayuctl`
 
 * Add metadata
 * Reboot the machine
