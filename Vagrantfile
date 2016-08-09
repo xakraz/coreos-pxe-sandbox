@@ -58,7 +58,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #prov.ssh.host = prov_ip
 
     # Configure the CoreOS instance
-    prov.vm.provision "file", source: "scripts", destination: "~/scripts"
+    prov.vm.provision "file", source: "scripts", destination: "~/"
     prov.vm.provision "shell" do |s|
       s.name           = "Setup Bats"
       s.inline         = "/bin/bash /home/core/scripts/bats/install.sh /opt"
