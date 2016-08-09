@@ -66,7 +66,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
     prov.vm.provision "shell" do |s|
       s.name           = "Setup network"
-      s.inline         = "export PATH=/opt/libexec:${PATH} /home/core/scripts/1-setup-gateway.sh"
+      s.inline         = "/home/core/scripts/1-setup-gateway.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
       s.privileged     = true
     end
 
