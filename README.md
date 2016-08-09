@@ -68,7 +68,14 @@ Other useful links:
 
 ## 1 - Up the sandbox environment
 
-Before starting, this is a quick overlook of the VMs that Vagrant will create:
+Before starting, checkout the submodules needed for provisioning the VMs:
+
+```
+$ git submodule init
+$ git submodule update
+```
+
+Let's have a quick overlook of the VMs that Vagrant will create:
 
 ```
 $ vagrant status
@@ -85,7 +92,6 @@ First, UP the provisioner host
 
 ```
 $ vagrant up core-provisioner
-
 ```
 
 
