@@ -3,26 +3,25 @@ coreos-pxe-sandbox
 
 <!-- MarkdownTOC -->
 
+- [TL;DR](#tldr)
 - [Overview](#overview)
 - [Description](#description)
   - [VBox topology](#vbox-topology)
-    - [Nodes](#nodes)
-    - [Networks](#networks)
   - [Requirements](#requirements)
 - [Demos](#demos)
   - [1 - Up the sandbox environment](#1---up-the-sandbox-environment)
   - [2 - Cluster Bootstrapping with Mayu](#2---cluster-bootstrapping-with-mayu)
-    - [Why Mayu ?](#why-mayu-)
-    - [Mayu config overview](#mayu-config-overview)
-    - [Step by Step bootstrapping](#step-by-step-bootstrapping)
   - [3 - CoreOS Update-engine usage and management](#3---coreos-update-engine-usage-and-management)
 
 <!-- /MarkdownTOC -->
 
 
+## TL;DR
 
+```
+```
 
-# Overview
+## Overview
 
 This repo contains a Vagrant setup to experiment provisioning a **cluster** of [CoreOS](https://coreos.com/) instances with [Mayu](https://github.com/giantswarm/mayu/), a tool provided by [GiantSwam](https://giantswarm.io/products/).
 
@@ -36,20 +35,19 @@ Other useful links:
 
 
 
+## Description
 
-# Description
-
-## VBox topology
+### VBox topology
 
 ![Vagrant setup](https://github.com/xakraz/coreos-pxe-sandbox/blob/master/img/20160719_CoreOS_1-cluster-bootstraping.png)
 
-### Nodes
+#### Nodes
 
 * `core-provisoner`: This node is 1 CoreOS instance. We are using the vagrant box provided by CoreOS (Already "provisioned", chicken / egg problem ^^). Every tools and softwares we will need to setup the PXE environment will run on this node into containers. It is much easier that way and the final goal of bootstrapping such infrastructure any way :)
 
 * `core-0x`: The other nodes are using a vagrant box especially built for network-boot and are blank. The interesting part is in the "machine" configuration from VBox.
 
-### Networks
+#### Networks
 
 * `Vboxnet0`: The default bridge interface created by VirtualBox. On this interface, VBox has a DNS and a DHCP service. The VMs using this network have access to the internet via NAT. We can not reach the VMs behind this interface.
 * `Vboxnet1`: This is a "private network" were we can access the VMs directly from the host but the VMs are not reachable from "outside" the hosts. It is a totally different network than the one that the host machine use.
@@ -57,7 +55,7 @@ Other useful links:
 > Note: In our setup, the `core-provisioner` VM will be the network **gateway** of our "private_network".
 
 
-## Requirements
+### Requirements
 
 * `Vagrant` > 1.6.0
 * `Virtualbox`
@@ -66,9 +64,9 @@ Other useful links:
 
 
 
-# Demos
+## Demos
 
-## 1 - Up the sandbox environment
+### 1 - Up the sandbox environment
 
 Before starting, checkout the submodules needed for provisioning the VMs:
 
@@ -116,9 +114,9 @@ What it does, described in the Vagrantfile, is:
 
 
 
-## 2 - Cluster Bootstrapping with Mayu
+### 2 - Cluster Bootstrapping with Mayu
 
-### Why Mayu ?
+#### Why Mayu ?
 
 There are several ways to setup a PXE boot environment and it is different in every company.
 
@@ -132,12 +130,12 @@ However `mayu` is really interesting for the following reasons:
 - And a HTTP RestAPI + client [`maycuctl`](https://github.com/giantswarm/mayu/blob/master/docs/mayuctl.md) that allows you to [**manage the life cycle**](https://github.com/giantswarm/mayu/blob/master/docs/machine_state_transition.md) of the servers from the same place
 
 
-### Mayu config overview
+#### Mayu config overview
 
 To run mayu, you can follow the very good documenation from the project repo.
 But we will provide a quick overview.
 
-#### Features
+##### Features
 
 Mayu (the container image) provides 4 main functions:
 - DHCP server, *providing an IP via BootP*
@@ -194,7 +192,7 @@ And the `mayuctl` utility.
 └── mayuctl*                    // The client
 ```
 
-#### Boot process
+##### Cluster configuration / boot process
 
 Mayu comes in a post-VM era, where we are used to **"comodity" and "standardised" hardware** (aka. same servers).
 
@@ -217,7 +215,7 @@ The key concept here are the [**"profiles"**](https://github.com/giantswarm/mayu
 
 
 
-### Step by Step bootstrapping
+#### Step by Step bootstrapping
 
 #### A - Prepare `Mayu`
 
@@ -234,14 +232,14 @@ core@prov ~ $
 #####  Fetch Mayu binaries
 
 ```
-core@prov ~ $ scripts/2-fetch-mayu.sh 0.11.1
+core@prov ~ $ scripts/2-fetch-mayu.sh
 ...
 mkdir: created directory '/home/core/giantswarm-mayu/mayu.0.11.1-linux-amd64'
 ~/giantswarm-mayu
 DONE
 ```
 
-#####  Pre-Fecth CoreOS images + other binaries
+#####  Pre-Fetch CoreOS images + other binaries
 
 Using the `fetch-coreos-image` utility script provided by `mayu` artifact:
 
@@ -519,7 +517,7 @@ And PXE reboot to reinstall the server.
 
 
 
-## 3 - CoreOS Update-engine usage and management
+### 3 - CoreOS Update-engine usage and management
 
 
 
