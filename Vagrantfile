@@ -75,7 +75,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
     # File sharing
-    prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'share'), "/home/core/share",
+    prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'shared'), "/home/core/shared",
       type: "rsync",
       rsync__args: ["--verbose", "--archive","--compress"]
   end
