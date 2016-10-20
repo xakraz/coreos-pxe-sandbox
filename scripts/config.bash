@@ -16,6 +16,9 @@ DOWNLOAD_DIR=${PROJECT_DIR}/giantswarm-mayu
 ARTIFACT_DIR=${DOWNLOAD_DIR}/${MAYU_ARTIFACT%.tar.gz}
 # This dir is part of our project and contains our own configfiles
 MAYU_CONF_DIR=${PROJECT_DIR}/shared/giantswarm-mayu/${MAYU_ARTIFACT%.tar.gz}
+
+# Run
+MAYU_IMAGE=giantswarm/mayu:${MAYU_VERSION}
 MAYU_RUN_OPTIONS="--no-tls \
 --debug \
 --use-internal-etcd-discovery=false --etcd-discovery=https://discovery.etcd.io \
