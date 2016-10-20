@@ -23,15 +23,19 @@ coreos-pxe-sandbox
 
 ## Overview
 
-This repo contains a Vagrant setup to experiment provisioning a **cluster** of [CoreOS](https://coreos.com/) instances with [Mayu](https://github.com/giantswarm/mayu/), a tool provided by [GiantSwam](https://giantswarm.io/products/).
+This repo contains a Vagrant setup to experiment **cluster provisioning** of [CoreOS](https://coreos.com/) instances with [Mayu](https://github.com/giantswarm/mayu/), a tool provided by [GiantSwam](https://giantswarm.io/products/).
 
-The goal is to have a "sandbox" environment where it is easy to try and test bootstrapping in a **Baremetal** use-case, the automated way (As you may need in a company).
+The goal is to have a "sandbox" environment where it is easy to try and test **bootstrapping on Baremetal**, the automated way (As you may need in a company).
+
+
+[CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
+
 
 Other useful links:
 * https://github.com/coreos/coreos-vagrant
 * https://github.com/coreos/coreos-baremetal
 * https://blog.giantswarm.io/mayu-yochu-provisioning-tools-for-coreos-bare-metal/
-* [CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
+
 
 
 
@@ -158,7 +162,7 @@ And the `mayuctl` utility.
 > Mayu does not "replace" the provisioning and installing instructions. **It uses the classic CoreOS** tools like `ignition` and `cloud-config`
 >
 
-#### Structure
+##### Structure
 
 ```
 ├── images/                       // Download CoreOS Images
