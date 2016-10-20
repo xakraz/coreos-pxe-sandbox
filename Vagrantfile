@@ -72,10 +72,34 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       }
       s.privileged     = true
     end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Fetch MAYU"
+      s.inline         = "/home/core/scripts/2-fetch-mayu.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Fetch PXE assets"
+      s.inline         = "/home/core/scripts/3-fecth-mayu-assets.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Start MAYU"
+      s.inline         = "/home/core/scripts/4-run-mayu-docker.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
 
 
     # File sharing
-    prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'share'), "/home/core/share",
+    prov.vm.synced_folder ::File.join(::File.dirname(__FILE__), 'shared'), "/home/core/shared",
       type: "rsync",
       rsync__args: ["--verbose", "--archive","--compress"]
   end
