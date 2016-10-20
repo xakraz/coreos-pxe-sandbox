@@ -1,6 +1,6 @@
-# used to install machines and if no coreos 
+# used to install machines and if no coreos
 # version is given in the profile
-default_coreos_version: 1068.6.0
+default_coreos_version: PH_COREOS_VERSION
 
 network:
   pxe: true
@@ -21,7 +21,7 @@ profiles:
     quantity: 3
     tags:
       - "role-core=true"
-    coreos_version: "1068.6.0"
+    coreos_version: "PH_COREOS_VERSION"
   - name: default
     disable_engine: true
     coreos_version: "835.13.0"

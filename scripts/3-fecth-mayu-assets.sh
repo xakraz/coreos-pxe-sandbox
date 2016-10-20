@@ -27,4 +27,9 @@ load config
   popd
 }
 
+# Tempaltes
+@test "Set CoreOS version in config file: ${MAYU_CONF_DIR}/conf/config.yaml" {
+  sed -i "s/PH_COREOS_VERSION/${COREOS_VERSION}/" ${MAYU_CONF_DIR}/conf/config.yaml
+}
+
 
