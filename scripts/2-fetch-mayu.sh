@@ -13,7 +13,7 @@ load config
 
 # Fetch Mayu
 @test "Fetching mayu ${MAYU_VERSION} from ${MAYU_URL}" {
-  pushd ${MAYU_DIR}
+  pushd ${DOWNLOAD_DIR}
   wget --output-document ${MAYU_ARTIFACT} --no-check-certificate ${MAYU_URL}
   mkdir -vp ${ARTIFACT_DIR}
   tar zxf ${MAYU_ARTIFACT} -C ${ARTIFACT_DIR}

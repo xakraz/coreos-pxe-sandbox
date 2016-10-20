@@ -12,7 +12,13 @@ COREOS_URL="http://stable.release.core-os.net/amd64-usr/${COREOS_VERSION}"
 
 # Project info
 PROJECT_DIR="$(cd .. && pwd -P)"
-MAYU_DIR=${PROJECT_DIR}/giantswarm-mayu
-ARTIFACT_DIR=${MAYU_DIR}/${MAYU_ARTIFACT%.tar.gz}
+DOWNLOAD_DIR=${PROJECT_DIR}/giantswarm-mayu
+ARTIFACT_DIR=${DOWNLOAD_DIR}/${MAYU_ARTIFACT%.tar.gz}
 # This dir is part of our project and contains our own configfiles
-CONF_DIR=${PROJECT_DIR}/shared/giantswarm-mayu/${MAYU_ARTIFACT%.tar.gz}
+MAYU_CONF_DIR=${PROJECT_DIR}/shared/giantswarm-mayu/${MAYU_ARTIFACT%.tar.gz}
+MAYU_RUN_OPTIONS="--no-tls \
+--debug \
+--use-internal-etcd-discovery=false --etcd-discovery=https://discovery.etcd.io \
+--use-ignition \
+--cluster-directory /var/lib/mayu/clusters/"
+

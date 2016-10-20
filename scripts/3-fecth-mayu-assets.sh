@@ -16,13 +16,13 @@ load config
 }
 
 # Copying Mayu scripts
-@test "" {
-  cp ${ARTIFACT_DIR}/fetch-coreos-image ${CONF_DIR}/
+@test "Copying Mayu scripts to Mayu conf dir ${MAYU_CONF_DIR}" {
+  cp ${ARTIFACT_DIR}/fetch-coreos-image ${MAYU_CONF_DIR}/
 }
 
 # Fetch Mayu
 @test "Fetching CoreOS Image: ${COREOS_VERSION}" {
-  pushd ${CONF_DIR}
+  pushd ${MAYU_CONF_DIR}
   ./fetch-coreos-image ${COREOS_VERSION}
   popd
 }
