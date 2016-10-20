@@ -11,7 +11,9 @@ COREOS_VERSION=1122.2.0
 COREOS_URL="http://stable.release.core-os.net/amd64-usr/${COREOS_VERSION}"
 
 # Project info
-PROJECT_DIR="$(cd .. && pwd -P)"
+#PROJECT_DIR="/home/core"
+#PROJECT_DIR="$(cd .. && pwd -P)"
+PROJECT_DIR="$(cd ${BATS_TEST_DIRNAME}/../ && pwd -P)"
 DOWNLOAD_DIR=${PROJECT_DIR}/giantswarm-mayu
 ARTIFACT_DIR=${DOWNLOAD_DIR}/${MAYU_ARTIFACT%.tar.gz}
 # This dir is part of our project and contains our own configfiles
