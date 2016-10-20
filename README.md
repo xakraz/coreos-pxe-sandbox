@@ -18,8 +18,51 @@ coreos-pxe-sandbox
 
 ## TL;DR
 
+Before starting, **checkout the submodules** needed for provisioning the VMs:
+
 ```
+$ git submodule init
+$ git submodule update
 ```
+
+Let's have a quick overlook of the VMs that Vagrant will create:
+
+```
+$ vagrant status
+Current machine states:
+
+core-provisioner          not created (virtualbox)
+core-01                   not created (virtualbox)
+core-02                   not created (virtualbox)
+core-03                   not created (virtualbox)
+```
+
+
+First, **UP the provisioner** host
+
+```
+$ vagrant up core-provisioner
+```
+
+
+Then boot the nodes
+
+```
+$ vagrant up --parallel /core-0/
+```
+
+
+Profit :)
+
+```
+Every 5.0s: ./mayuctl --debug --no-tls list                                                                    Tue Jul 19 10:44:14 2016
+
+IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE   LASTBOOT
+192.168.2.21  0800278e158a-0  core-services  -         -           a1980e85fd8527103545e92d3eb5c48f  role-core=true  1068.6.0  "running"  2016-07-19 10:43:20
+192.168.2.22  0800278e158b-1  core-services  -         -           a1980e85fd8527103545e92d3eb5c48f  role-core=true  1068.6.0  "running"  2016-07-19 10:43:36
+192.168.2.23  0800278e158c-2  core-services  -         -           a1980e85fd8527103545e92d3eb5c48f  role-core=true  1068.6.0  "running"  2016-07-19 10:43:45
+```
+
 
 ## Overview
 
