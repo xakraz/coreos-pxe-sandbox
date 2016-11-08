@@ -4,7 +4,10 @@ coreos-pxe-sandbox
 <!-- MarkdownTOC -->
 
 - [TL;DR](#tldr)
-- [Overview](#overview)
+  - [1 - Workspace setup](#1---workspace-setup)
+  - [2 - Vagrant boxes](#2---vagrant-boxes)
+  - [3 - Provisioning follow-up](#3---provisioning-follow-up)
+- [Details overview](#details-overview)
 - [Description](#description)
   - [VBox topology](#vbox-topology)
   - [Requirements](#requirements)
@@ -18,12 +21,20 @@ coreos-pxe-sandbox
 
 ## TL;DR
 
+Workshop demo repo for [CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
+
+### 1 - Workspace setup
+
 Before starting, **checkout the submodules** needed for provisioning the VMs:
 
 ```
+$ git clone https://github.com/xakraz/coreos-pxe-sandbox.git && cd coreos-pxe-sandbox
 $ git submodule init
 $ git submodule update
 ```
+
+
+### 2 - Vagrant boxes
 
 Let's have a quick overlook of the VMs that Vagrant will create:
 
@@ -52,9 +63,22 @@ $ vagrant up --parallel /core-0/
 ```
 
 
+### 3 - Provisioning follow-up
+
 Profit :)
 
 ```
+$ vagrant ssh core-provisioner
+core@prov ~ $ docker ps -a
+CONTAINER ID        IMAGE                    COMMAND                  CREATED             STATUS              PORTS               NAMES
+41007d9286fa        giantswarm/mayu:0.11.1   "mayu --cluster-direc"   3 hours ago         Up 3 hours                              mayu
+```
+
+
+```
+$ vagrant ssh core-provisioner
+core@prov ~ $ watch -n 5 'giantswarm-mayu/mayu.0.11.1-linux-amd64/mayuctl --no-tls list'
+
 Every 5.0s: ./mayuctl --debug --no-tls list                                                                    Tue Jul 19 10:44:14 2016
 
 IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN                         METADATA        COREOS    STATE   LASTBOOT
@@ -64,15 +88,12 @@ IP            SERIAL          PROFILE        IPMIADDR  PROVIDERID  ETCDTOKEN    
 ```
 
 
-## Overview
+
+## Details overview
 
 This repo contains a Vagrant setup to experiment **cluster provisioning** of [CoreOS](https://coreos.com/) instances with [Mayu](https://github.com/giantswarm/mayu/), a tool provided by [GiantSwam](https://giantswarm.io/products/).
 
 The goal is to have a "sandbox" environment where it is easy to try and test **bootstrapping on Baremetal**, the automated way (As you may need in a company).
-
-
-[CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
-
 
 Other useful links:
 * https://github.com/coreos/coreos-vagrant
@@ -156,7 +177,11 @@ What it does, described in the Vagrantfile, is:
 > --
 >
 > We are using RSYNC for file sharing since NFS is not enabled by default on CoreOS.
+> - https://www.vagrantup.com/docs/cli/rsync.html
+> - https://www.vagrantup.com/docs/cli/rsync-auto.html
+>
 > But you can use it if you wish to use a CoreOS Box as you development environment :)
+> - https://coreos.com/os/docs/latest/booting-on-vagrant.html#shared-folder-setup
 >
 
 
@@ -202,13 +227,13 @@ And the `mayuctl` utility.
 > The DHCP, PXE and TFTP capabilities are in facts provided by an embedded `dnsmasq` instance.
 > Its configuration is managed by the `mayu`.
 >
-> Mayu does not "replace" the provisioning and installing instructions. **It uses the classic CoreOS** tools like `ignition` and `cloud-config`
+> Mayu **does not "replace" the provisioning** and installing instructions. **It uses the classic CoreOS** tools like `ignition` and `cloud-config`
 >
 
-##### Structure
+##### Directory layout
 
 ```
-├── images/                       // Download CoreOS Images
+├── images/                       // Downloaded CoreOS Images
 |
 ├── static_html/
 │   ├── infopusher*
@@ -220,23 +245,25 @@ And the `mayuctl` utility.
 |
 ├── templates/
 |   |
-│   ├── dnsmasq_template.conf
+│   ├── dnsmasq_template.conf       // Mayu network config
+|   |
 │   ├── first_stage_script.sh       // Where some magic comes from :)
 |   |
-│   ├── ignition/
+│   ├── ignition/                   // CoreOS bootstrap config (Ignition/cloud-config)
 │   ├── first_stage_cloudconfig.yaml
 │   └── last_stage_cloudconfig.yaml
 |
 ├── tftproot/
 │   └── undionly.kpxe
 |
-├── config.yaml                 // Config
+├── config.yaml                 // Mayu global config
+|
 ├── fetch-coreos-image*         // Helper script
 ├── fetch-coreos-qemu-image*    // Helper script
 ├── fetch-yochu-assets*         // Helper script
 |
-├── mayu*                       // The service
-└── mayuctl*                    // The client
+├── mayu*                       // The service binary
+└── mayuctl*                    // The client binary
 ```
 
 ##### Cluster configuration / boot process
@@ -263,6 +290,14 @@ The key concept here are the [**"profiles"**](https://github.com/giantswarm/mayu
 
 
 #### Step by Step bootstrapping
+
+> Notes
+> --
+>
+> These steps are now part of the "provisioning" part handled by Vagrant.
+> See the [scripts](scripts/) directory and the [Vagrantfile](Vagrantfile)
+>
+
 
 #### A - Prepare `Mayu`
 
@@ -319,22 +354,23 @@ total 524692
 
 #####  Check the `mayu` conf
 
-Located in the `share` directory
+Located in the [`shared`](shared/giantswarm-mayu/) directory
 * The default CoreOS Image
 * The network setup for Mayu
 * The clusters Profiles
 * And SSH Keys
+* The YOCHU assets (Tools binary)
 
 ```
-core@prov ~ $ cat share/giantswarm-mayu/mayu.0.11.1-linux-amd64/conf/config.yaml
+core@prov ~ $ cat shared/giantswarm-mayu/mayu.0.11.1-linux-amd64/conf/config.yaml
 ```
 
 #####  Start the container and explore
 
-With the provided [script](scripts/3-run-mayu-docker.sh) and the good volumes:
+With the provided [script](scripts/4-run-mayu-docker.sh) and the good volumes:
 
 ```
-core@prov ~ $ sudo scripts/3-run-mayu-docker.sh
+core@prov ~ $ sudo scripts/4-run-mayu-docker.sh
 
 Unable to find image 'giantswarm/mayu:0.11.1' locally
 0.11.1: Pulling from giantswarm/mayu
@@ -367,11 +403,11 @@ E0809 15:07:21.955479       1 dnsmasq.go:75] signal: killed
 > Note
 > --
 >
-> By default, `Mayu` thinks it can access an ETCD instance running on the same host to enable the `etcd` bootstrapping of the CoreOS clusters.
+> By default, `Mayu` thinks it can access an **ETCD instance running on the same host** to enable the `etcd` bootstrapping of the CoreOS clusters.
 >
-> The documation regarding this is not linked anywhere but is readable there: https://github.com/giantswarm/mayu/blob/master/docs/etcd_clusters.md
+> The documentation regarding this is not linked anywhere but is readable there: https://github.com/giantswarm/mayu/blob/master/docs/etcd_clusters.md
 >
-> For workshop reasons, we will use the public ETCD service provided by CoreOS. But, of course, for production usage, use a local etcd instance as explained.
+> For workshop reasons, we will use the public ETCD service provided by CoreOS (https://discovery.etcd.io). But, of course, for production usage, use a local `etcd` instance as explained.
 
 #####  Check the service
 
