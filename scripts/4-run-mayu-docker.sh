@@ -14,7 +14,7 @@ load config
   --name=mayu \
   -v ${MAYU_CONF_DIR}/images:/usr/lib/mayu/images \
   -v ${MAYU_CONF_DIR}/yochu:/usr/lib/mayu/yochu \
-  -v ${MAYU_CONF_DIR}/clusters:/var/lib/mayu \
+  -v ${MAYU_CONF_DIR}/clusters:/var/lib/mayu/clusters \
   -v ${MAYU_CONF_DIR}/template_snippets:/usr/lib/mayu/template_snippets \
   -v ${MAYU_CONF_DIR}/templates:/usr/lib/mayu/templates \
   -v ${MAYU_CONF_DIR}/conf/config.yaml:/etc/mayu/config.yaml:ro \
