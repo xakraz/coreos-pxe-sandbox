@@ -24,6 +24,5 @@ MAYU_IMAGE=giantswarm/mayu:${MAYU_VERSION}
 MAYU_RUN_OPTIONS="--no-tls \
 --debug \
 --use-internal-etcd-discovery=false --etcd-discovery=https://discovery.etcd.io \
---use-ignition \
 --cluster-directory /var/lib/mayu/clusters/"
 
