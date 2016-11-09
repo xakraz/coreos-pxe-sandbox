@@ -65,14 +65,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       s.privileged     = true
     end
     prov.vm.provision "shell" do |s|
-      s.name           = "Setup network"
-      s.inline         = "/home/core/scripts/1-setup-gateway.sh"
-      s.env            = {
-        PATH: "/opt/libexec:${PATH}"
-      }
-      s.privileged     = true
-    end
-    prov.vm.provision "shell" do |s|
       s.name           = "Fetch MAYU"
       s.inline         = "/home/core/scripts/2-fetch-mayu.sh"
       s.env            = {
@@ -91,6 +83,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     prov.vm.provision "shell" do |s|
       s.name           = "Start MAYU"
       s.inline         = "/home/core/scripts/4-run-mayu-docker.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Setup network"
+      s.inline         = "/home/core/scripts/1-setup-gateway.sh"
       s.env            = {
         PATH: "/opt/libexec:${PATH}"
       }
