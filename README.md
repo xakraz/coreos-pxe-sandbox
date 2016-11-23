@@ -63,6 +63,13 @@ $ vagrant up --parallel /core-0/
 ```
 
 
+#### Notes
+
+>
+> Have a look at [vagrant's provisioning config variables](scripts/config.bash) to customize or update the versions of  `Mayu` and CoreOS images.
+>
+
+
 ### 3 - Provisioning follow-up
 
 Profit :)
