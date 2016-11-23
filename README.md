@@ -151,7 +151,7 @@ Other useful links:
 
 ### 3 - CoreOS Update-engine usage and management
 
-
+[demo-3](docs/demo-3.md)
 
 
 
