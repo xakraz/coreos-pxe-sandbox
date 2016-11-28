@@ -89,8 +89,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       s.privileged     = true
     end
     prov.vm.provision "shell" do |s|
+      s.name           = "Start Coreroller"
+      s.inline         = "/home/core/scripts/5-run-coreroller.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
       s.name           = "Setup network"
       s.inline         = "/home/core/scripts/1-setup-gateway.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Stop update-engine"
+      s.inline         = "/home/core/scripts/6-coreos-disable-update-engine.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Final tests"
+      s.inline         = "/home/core/scripts/7-validation.sh"
       s.env            = {
         PATH: "/opt/libexec:${PATH}"
       }
