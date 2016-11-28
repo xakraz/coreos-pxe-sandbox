@@ -1,8 +1,8 @@
 {
-	"name": "my-group",
+	"name": "mygroup",
 	"description": "My CoreOS group",
 	"application_id": "e96281a6-d1af-4bde-9a0a-97b76e56dc57",
-	"channel_id": "f8ff5024-09a9-494f-920c-cc817b3ef53c",
+	"channel_id": "e06064ad-4414-4904-9a6e-fd465593d1b2",
 	"policy_updates_enabled": true,
 	"policy_safe_mode": true,
 	"policy_office_hours": false,
