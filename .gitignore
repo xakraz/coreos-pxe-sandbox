@@ -13,3 +13,5 @@ share/giantswarm-mayu/mayu.0.11.1-linux-amd64/clusters
 
 ## MacOS
 *.DS_Store
+
+tmp/
