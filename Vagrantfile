@@ -89,8 +89,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       s.privileged     = true
     end
     prov.vm.provision "shell" do |s|
+      s.name           = "Start Coreroller"
+      s.inline         = "/home/core/scripts/5-run-coreroller.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
       s.name           = "Setup network"
       s.inline         = "/home/core/scripts/1-setup-gateway.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Stop update-engine"
+      s.inline         = "/home/core/scripts/6-coreos-disable-update-engine.sh"
+      s.env            = {
+        PATH: "/opt/libexec:${PATH}"
+      }
+      s.privileged     = true
+    end
+    prov.vm.provision "shell" do |s|
+      s.name           = "Final tests"
+      s.inline         = "/home/core/scripts/7-validation.sh"
       s.env            = {
         PATH: "/opt/libexec:${PATH}"
       }
@@ -144,6 +168,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # This hack sets a different, but predicatable serial_number to the nodes VMs
         # Mayu uses serial_number as a uuid for servers
         vb.customize ["setextradata", :id, "VBoxInternal/Devices/pcbios/0/Config/DmiSystemSerial", "string:#{mac}-#{index}"]
+      end
+
+      # Configure the CoreOS instance
+      node.vm.provision "file", source: "scripts", destination: "~/"
+      node.vm.provision "shell" do |s|
+        s.name           = "Setup Bats"
+        s.inline         = "/bin/bash /home/core/scripts/bats/install.sh /opt"
+        s.privileged     = true
+      end
+      node.vm.provision "shell" do |s|
+        s.name           = "Nodes post-install"
+        s.inline         = "/home/core/scripts/nodes-post-install.sh"
+        s.env            = {
+          PATH: "/opt/libexec:${PATH}"
+        }
+        s.privileged     = true
       end
     end
   end

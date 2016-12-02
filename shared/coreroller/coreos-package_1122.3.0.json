@@ -1,0 +1,22 @@
+{
+	"application_id": "e96281a6-d1af-4bde-9a0a-97b76e56dc57",
+	"channels_blacklist": null,
+	"coreos_action": {
+		"chromeos_version": "",
+		"deadline": "",
+		"disable_payload_backoff": true,
+		"event": "postinstall",
+		"is_delta": false,
+		"metadata_signature_rsa": "",
+		"metadata_size": "",
+		"needs_admin": false,
+		"sha256": "aYnn+P/Z4jioLp7i24Eah77r0Ns6s7z/0Y9tP0712Oc="
+	},
+	"description": null,
+	"filename": "update.gz",
+	"hash": "QQuFBD4ZyxRNdah1Xi3RJOXa4vo=",
+	"size": "213129575",
+	"url": "https://update.release.core-os.net/amd64-usr/1122.3.0/",
+	"type": 1,
+	"version": "1122.3.0"
+}

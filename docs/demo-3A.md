@@ -48,10 +48,23 @@ You can _promote_ OR _blacklist_ a package from a specific release.
 For this example, we will use the **"demo" docker image** as explained here https://github.com/coreroller/coreroller#getting-started
 
 ```
-docker run -d -p 8000:8000 coreroller/demo
+$ vagrant ssh core-provisioner
+
+core@prov ~ $ docker run -d -p 8000:8000 coreroller/demo
 ```
 
-Once the container is up, just point your browser to: http://localhost:8000/ (Or the IP of the server where CoreRoller is running)
+Once the container is up, just point your browser to: (http://localhost:8000/) (Or the IP of the server where CoreRoller is running)
+
+```
+core@prov ~ $ ip addr show
+
+...
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:b3:7a:d1 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.2.2/24 brd 192.168.2.255 scope global eth1           <----
+```
+
+http://192.168.2.2:8000
 
 And you should be ready to go. Default username/password is admin/admin.
 
