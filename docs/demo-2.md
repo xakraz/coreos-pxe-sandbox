@@ -2,21 +2,23 @@
 
 <!-- MarkdownTOC depth=5 -->
 
-- [What is Mayu ?](#what-is-mayu-)
-- [Mayu config overview](#mayu-config-overview)
-  - [A - Features](#a---features)
-  - [B - Directory layout](#b---directory-layout)
-  - [C - Boot process](#c---boot-process)
-- [Cluster configuration](#cluster-configuration)
-- [Step by Step bootstrapping](#step-by-step-bootstrapping)
-  - [A - Prepare `Mayu`](#a---prepare-mayu)
-  - [B - Start `Mayu`](#b---start-mayu)
-  - [C - Boot the VMs in PXE](#c---boot-the-vms-in-pxe)
-  - [D - Lifecycle with `mayuctl`](#d---lifecycle-with-mayuctl)
+- [2 - Cluster Bootstrapping with Mayu](#2---cluster-bootstrapping-with-mayu)
+  - [What is Mayu ?](#what-is-mayu-)
+  - [Mayu config overview](#mayu-config-overview)
+    - [A - Features](#a---features)
+    - [B - Directory layout](#b---directory-layout)
+    - [C - Boot process](#c---boot-process)
+  - [Cluster configuration](#cluster-configuration)
+  - [Step by Step bootstrapping](#step-by-step-bootstrapping)
+    - [A - Prepare `Mayu`](#a---prepare-mayu)
+    - [B - Start `Mayu`](#b---start-mayu)
+    - [C - Boot the VMs in PXE](#c---boot-the-vms-in-pxe)
+    - [D - Lifecycle with `mayuctl`](#d---lifecycle-with-mayuctl)
 
 <!-- /MarkdownTOC -->
 
 
+### 2 - Cluster Bootstrapping with Mayu
 
 #### What is Mayu ?
 

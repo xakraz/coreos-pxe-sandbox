@@ -2,18 +2,22 @@
 
 <!-- MarkdownTOC depth=6 -->
 
-- [A - Locksmith](#a---locksmith)
-- [B - Update-engine](#b---update-engine)
-- [C - Start the systemd units](#c---start-the-systemd-units)
+- [B - CoreOS configuration](#b---coreos-configuration)
+  - [Locksmith](#locksmith)
+    - [Note01](#note01)
+  - [Update-engine](#update-engine)
+  - [Start the systemd units](#start-the-systemd-units)
 
 <!-- /MarkdownTOC -->
 
+
+### B - CoreOS configuration
 
 Official configuration reference:
 - https://coreos.com/os/docs/latest/update-strategies.html
 
 
-###### A - Locksmith
+#### Locksmith
 
 ```
 /etc/coreos/update.conf
@@ -26,7 +30,7 @@ LOCKSMITHD_REBOOT_WINDOW_LENGTH=1h
 ```
 
 
-####### Note01
+##### Note01
 
 Watch the `etcd-lock` structure
 
@@ -45,7 +49,7 @@ $ etcdctl --endpoints http://192.168.2.21:2379,http://192.168.2.21:4001 get /cor
 
 
 
-###### B - Update-engine
+#### Update-engine
 
 https://github.com/coreroller/coreroller#existing-machines
 
@@ -60,7 +64,7 @@ SERVER=http://192.168.2.2:8000/v1/update/   <----
 
 
 
-###### C - Start the systemd units
+#### Start the systemd units
 
 Activate `locksmithd`, deactivated by Cloud-config:
 
@@ -75,9 +79,9 @@ Activate `update-engine`, deactivated by Cloud-config:
 
 ```
 sudo systemctl unmask update-engine.service
-sudo systemctl start update-engine.service
-
-sudo journalctl -f -u update-engine.service
+sudo systemctl start update-engine.service && sudo journalctl -f -u update-engine.service
 ```
+
+
 
 

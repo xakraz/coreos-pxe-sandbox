@@ -2,22 +2,30 @@
 
 <!-- MarkdownTOC depth=6 -->
 
-- [Introduction](#introduction)
-- [Concepts](#concepts)
-- [Features](#features)
-- [Example](#example)
+- [A - CoreRoller introduction](#a---coreroller-introduction)
+  - [Introduction](#introduction)
+  - [Concepts](#concepts)
+  - [Features](#features)
+  - [Example](#example)
+    - [a - Start CoreRoller](#a---start-coreroller)
+    - [b - Create a "package"](#b---create-a-package)
+      - [WebUI](#webui)
+      - [HTTP REST API](#http-rest-api)
+    - [c - Create a "Group"](#c---create-a-group)
 
 <!-- /MarkdownTOC -->
 
 
-###### Introduction
+### A - CoreRoller introduction
+
+#### Introduction
 
 [CoreRoller](https://github.com/coreroller/coreroller) is a set of tools to **control and monitor the rollout of your updates**.
 
 It's aimed to be an open source alternative to CoreOS [CoreUpdate](https://coreos.com/products/coreupdate/).
 
 
-###### Concepts
+#### Concepts
 
 The key concepts of the update management are:
 * Define _a software package_ with a version
@@ -29,7 +37,7 @@ To define an update, assign 1 group to 1 release channel.
 You can _promote_ OR _blacklist_ a package from a specific release.
 
 
-###### Features
+#### Features
 
 * Dashboard to control and monitor your applications updates
 * Manage updates for your own applications, not just for CoreOS
@@ -43,7 +51,10 @@ You can _promote_ OR _blacklist_ a package from a specific release.
 * Based on the Omaha protocol developed by Google
 
 
-###### Example
+
+#### Example
+
+##### a - Start CoreRoller
 
 For this example, we will use the **"demo" docker image** as explained here https://github.com/coreroller/coreroller#getting-started
 
@@ -69,4 +80,77 @@ http://192.168.2.2:8000
 And you should be ready to go. Default username/password is admin/admin.
 
 
+
+##### b - Create a "package"
+
+###### WebUI
+
 ![Create a package](../img/CoreRoller/CoreRoller-package-1.png)
+
+
+###### HTTP REST API
+
+```
+shared/coreroller  $ http --auth admin:admin --json POST \
+                          http://192.168.2.2:8000/api/apps/e96281a6-d1af-4bde-9a0a-97b76e56dc57/packages < coreos-package_1122.2.0.json
+
+HTTP/1.1 200 OK
+Content-Length: 697
+Content-Type: text/plain; charset=utf-8
+Date: Fri, 02 Dec 2016 10:49:48 GMT
+X-Authenticated-Username: admin
+
+{
+    "application_id": "e96281a6-d1af-4bde-9a0a-97b76e56dc57",
+    "channels_blacklist": null,
+    "coreos_action": {
+        "chromeos_version": "",
+        "created_ts": "2016-12-02T10:49:48.937948Z",
+        "deadline": "",
+        "disable_payload_backoff": true,
+        "event": "postinstall",
+        "id": "19b4f745-6e7a-45fe-b027-efc3d1cc2218",
+        "is_delta": false,
+        "metadata_signature_rsa": "",
+        "metadata_size": "",
+        "needs_admin": false,
+        "sha256": "cSBzKN0c6vKinrH0SdqUZSHlQtCa90vmeKC7p/xk19M="          <----
+    },
+    "created_ts": "2016-12-02T10:49:48.937948Z",
+    "description": null,
+    "filename": "update.gz",                                              <----
+    "hash": "+ZFmPWzv1OdfmKHaGSojbK5Xj3k=",                               <----
+    "id": "81f05e1f-46a1-41fc-90ab-5244c9396b19",
+    "size": "212555113",                                                  <----
+    "type": 1,
+    "url": "https://update.release.core-os.net/amd64-usr/1122.2.0/",      <----
+    "version": "1122.2.0"                                                 <----
+}
+```
+
+=> Record the `Package_ID`
+
+
+
+##### c - Create a "Group"
+
+
+```
+shared/coreroller  $ http --auth admin:admin --json POST \
+                          http://192.168.2.2:8000/api/apps/e96281a6-d1af-4bde-9a0a-97b76e56dc57/groups < my_group.json
+
+HTTP/1.1 200 OK
+Content-Length: 1618
+Content-Type: text/plain; charset=utf-8
+Date: Fri, 02 Dec 2016 11:01:35 GMT
+X-Authenticated-Username: admin
+
+...
+```
+
+
+
+
+
+
+
