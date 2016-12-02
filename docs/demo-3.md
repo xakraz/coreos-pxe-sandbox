@@ -2,18 +2,20 @@
 
 <!-- MarkdownTOC depth=5 -->
 
-- [CoreOS update philosophy](#coreos-update-philosophy)
-- [Update components](#update-components)
-  - [A - Update-engine](#a---update-engine)
-  - [B - Locksmith](#b---locksmith)
-- [Setp by step management](#setp-by-step-management)
-  - [A - CoreRoller introduction](#a---coreroller-introduction)
-  - [B - CoreOS configuration](#b---coreos-configuration)
-  - [C - Update progress follow-up](#c---update-progress-follow-up)
+- [3 - CoreOS Update-engine usage and management](#3---coreos-update-engine-usage-and-management)
+  - [CoreOS update philosophy](#coreos-update-philosophy)
+  - [Update components](#update-components)
+    - [A - Update-engine](#a---update-engine)
+    - [B - Locksmith](#b---locksmith)
+  - [Setp by step management](#setp-by-step-management)
+    - [A - CoreRoller introduction](#a---coreroller-introduction)
+    - [B - CoreOS configuration](#b---coreos-configuration)
+    - [C - Update progress follow-up](#c---update-progress-follow-up)
 
 <!-- /MarkdownTOC -->
 
 
+### 3 - CoreOS Update-engine usage and management
 
 #### CoreOS update philosophy
 
