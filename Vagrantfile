@@ -169,6 +169,22 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Mayu uses serial_number as a uuid for servers
         vb.customize ["setextradata", :id, "VBoxInternal/Devices/pcbios/0/Config/DmiSystemSerial", "string:#{mac}-#{index}"]
       end
+
+      # Configure the CoreOS instance
+      node.vm.provision "file", source: "scripts", destination: "~/"
+      node.vm.provision "shell" do |s|
+        s.name           = "Setup Bats"
+        s.inline         = "/bin/bash /home/core/scripts/bats/install.sh /opt"
+        s.privileged     = true
+      end
+      node.vm.provision "shell" do |s|
+        s.name           = "Nodes post-install"
+        s.inline         = "/home/core/scripts/nodes-post-install.sh"
+        s.env            = {
+          PATH: "/opt/libexec:${PATH}"
+        }
+        s.privileged     = true
+      end
     end
   end
 end
