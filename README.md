@@ -4,13 +4,16 @@ coreos-pxe-sandbox
 <!-- MarkdownTOC -->
 
 - [TL;DR](#tldr)
-  - [1 - Workspace setup](#1---workspace-setup)
-  - [2 - Vagrant boxes](#2---vagrant-boxes)
+  - [1 - Requirements](#1---requirements)
+  - [2 - Workspace setup](#2---workspace-setup)
+  - [3 - Vagrant boxes](#3---vagrant-boxes)
+    - [Notes](#notes)
   - [3 - Provisioning follow-up](#3---provisioning-follow-up)
 - [Details overview](#details-overview)
 - [Description](#description)
   - [VBox topology](#vbox-topology)
-  - [Requirements](#requirements)
+    - [Nodes](#nodes)
+    - [Networks](#networks)
 - [Demos](#demos)
   - [1 - Up the sandbox environment](#1---up-the-sandbox-environment)
   - [2 - Cluster Bootstrapping with Mayu](#2---cluster-bootstrapping-with-mayu)
@@ -23,7 +26,16 @@ coreos-pxe-sandbox
 
 Workshop demo repo for [CoreOS Paris UG Meetup slides](20160719_CoreOS_1-cluster-bootstrapping.pdf)
 
-### 1 - Workspace setup
+
+### 1 - Requirements
+
+* `Vagrant` > 1.6.0
+* `Virtualbox`
+* `Virtualbox-extension-pack` (For the PXE setup, needing some HW Network drivers for the VM)
+
+
+
+### 2 - Workspace setup
 
 Before starting, **checkout the submodules** needed for provisioning the VMs:
 
@@ -34,7 +46,7 @@ $ git submodule update
 ```
 
 
-### 2 - Vagrant boxes
+### 3 - Vagrant boxes
 
 Let's have a quick overlook of the VMs that Vagrant will create:
 
@@ -56,7 +68,27 @@ $ vagrant up core-provisioner
 ```
 
 
-Then boot the nodes
+BEFORE booting the nodes, **deactivate the VirtualBox DHCP server**
+
+```
+$ VBoxManage dhcpserver modify --ifname vboxnet0 --disable
+```
+
+> Comment
+> --
+>
+> Check that the private network interfaces created by VBox for your workspace is `vboxnet0`
+>
+> ```
+> $ VBoxManage list runningvms
+> "coreos-pxe-sandbox_core-provisioner_1487844067320_27186" {ba767d34-ceea-4a00-8d43-1cf0782f269c}
+>
+> $ VBoxManage showvminfo coreos-pxe-sandbox_core-provisioner_1487844067320_27186 | grep -i "NIC 2"
+> NIC 2:           MAC: 080027D22DCB, Attachment: Host-only Interface 'vboxnet0', Cable connected: on, Trace: off (file: none), Type: virtio, Reported speed: 0 Mbps, Boot priority: 0, Promisc Policy: deny, Bandwidth group: none
+> ```
+>
+
+Then **boot** the nodes
 
 ```
 $ vagrant up --parallel /core-0/
@@ -127,14 +159,6 @@ Other useful links:
 * `Vboxnet1`: This is a "private network" were we can access the VMs directly from the host but the VMs are not reachable from "outside" the hosts. It is a totally different network than the one that the host machine use.
 
 > Note: In our setup, the `core-provisioner` VM will be the network **gateway** of our "private_network".
-
-
-### Requirements
-
-* `Vagrant` > 1.6.0
-* `Virtualbox`
-* `Virtualbox-extension-pack` (For the PXE setup, needing some HW Network drivers for the VM)
-
 
 
 

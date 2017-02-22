@@ -155,7 +155,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Use the ip we gets assigned from dhcp when 'vagrant ssh'
       node.ssh.host     = ip
       node.ssh.username = 'core'
-      #node.ssh.private_key_path = '/Users/x.krantz/.ssh/ssh-x.krantz@criteo-mbp'
 
 
       # Virtualbox provider tweaks

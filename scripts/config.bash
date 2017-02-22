@@ -11,8 +11,6 @@ COREOS_VERSION=1122.2.0
 COREOS_URL="http://stable.release.core-os.net/amd64-usr/${COREOS_VERSION}"
 
 # Project info
-#PROJECT_DIR="/home/core"
-#PROJECT_DIR="$(cd .. && pwd -P)"
 PROJECT_DIR="$(cd ${BATS_TEST_DIRNAME}/../ && pwd -P)"
 DOWNLOAD_DIR=${PROJECT_DIR}/giantswarm-mayu
 ARTIFACT_DIR=${DOWNLOAD_DIR}/${MAYU_ARTIFACT%.tar.gz}
@@ -23,6 +21,8 @@ MAYU_CONF_DIR=${PROJECT_DIR}/shared/giantswarm-mayu/${MAYU_ARTIFACT%.tar.gz}
 MAYU_IMAGE=giantswarm/mayu:${MAYU_VERSION}
 MAYU_RUN_OPTIONS="--no-tls \
 --debug \
+-v=12 \
+--alsologtostderr=true \
 --use-internal-etcd-discovery=false --etcd-discovery=https://discovery.etcd.io \
 --cluster-directory /var/lib/mayu/clusters/"
 
